@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
       { command: "whoami", response: "Joshua Hamsa" },
       { command: "pwd", response: "/home/hamsa" },
       { command: "cat bio.txt", response: "Builder, creator, and continuous learner." },
+      { command: "clear", response: null }
     ]
 
     let currentCommandIndex = 0
@@ -19,17 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function typeNextCommand() {
       if (currentCommandIndex >= commands.length) {
-        // Add `clear` command and response
-        const clearCmd = document.createElement("div")
-        clearCmd.innerHTML = `<span class="prompt">$</span> <span class="command">clear</span>`
-        introText.appendChild(clearCmd)
-
-        setTimeout(() => {
-          introText.innerHTML = "" // Now clear screen like a real terminal
-          currentCommandIndex = 0
-          typeNextCommand()
-        }, 500)
-
         return
       }
 
@@ -50,25 +40,33 @@ document.addEventListener("DOMContentLoaded", () => {
           setTimeout(typeCommand, 100)
         } else {
           isTyping = false
-          setTimeout(() => {
-            const responseElement = document.createElement("div")
-            responseElement.className = "response"
-            responseElement.textContent = commandData.response
-            introText.appendChild(responseElement)
 
-            // Add cursor for next command
-            const cursorElement = document.createElement("div")
-            cursorElement.innerHTML = `<span class="prompt">$</span> <span class="cursor"></span>`
-            introText.appendChild(cursorElement)
-
-            currentCommandIndex++
-
-            // Type next command after delay
+          if (commandData.response !== null) {
             setTimeout(() => {
-              introText.removeChild(cursorElement)
+              const responseElement = document.createElement("div")
+              responseElement.className = "response"
+              responseElement.textContent = commandData.response
+              introText.appendChild(responseElement)
+
+              const cursorElement = document.createElement("div")
+              cursorElement.innerHTML = `<span class="prompt">$</span> <span class="cursor"></span>`
+              introText.appendChild(cursorElement)
+
+              currentCommandIndex++
+
+              setTimeout(() => {
+                introText.removeChild(cursorElement)
+                typeNextCommand()
+              }, 2000)
+            }, 500)
+          } else {
+            // If response is null (like for "clear"), reset screen
+            setTimeout(() => {
+              currentCommandIndex = 0
+              introText.innerHTML = ""
               typeNextCommand()
-            }, 2000)
-          }, 500)
+            }, 500)
+          }
         }
       }
 
