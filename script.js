@@ -19,8 +19,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function typeNextCommand() {
       if (currentCommandIndex >= commands.length) {
-        currentCommandIndex = 0
-        introText.innerHTML = ""
+        // Add `clear` command and response
+        const clearCmd = document.createElement("div")
+        clearCmd.innerHTML = `<span class="prompt">$</span> <span class="command">clear</span>`
+        introText.appendChild(clearCmd)
+
+        setTimeout(() => {
+          introText.innerHTML = "" // Now clear screen like a real terminal
+          currentCommandIndex = 0
+          typeNextCommand()
+        }, 500)
+
+        return
       }
 
       const commandData = commands[currentCommandIndex]
