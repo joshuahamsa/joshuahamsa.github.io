@@ -38,7 +38,7 @@ body {
   border-radius: 8px 8px 0 0;
   display: flex;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 0;
 }
 
 .terminal-buttons {
@@ -85,6 +85,7 @@ body {
   border-radius: 6px;
   border: 1px solid #333;
   box-shadow: inset 0 0 5px #000;
+  margin-bottom: 2rem;
 }
 
 .typing-effect {
