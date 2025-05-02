@@ -74,12 +74,13 @@ body {
 
 /* Intro section */
 .intro {
-  background-color: var(--bg-color);
-  padding: 2rem 1rem;
-  border: 1px solid #333;
-  border-top: none;
-  border-radius: 0 0 8px 8px;
-  margin-bottom: 3rem;
+  max-height: 250px;
+  overflow-y: auto;
+  background-color: #111;
+  color: #0f0;
+  font-family: monospace;
+  padding: 1em;
+  border-radius: 6px;
 }
 
 .typing-effect {
