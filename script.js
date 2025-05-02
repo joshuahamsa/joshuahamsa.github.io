@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function typeNextCommand() {
       if (currentCommandIndex >= commands.length) {
         currentCommandIndex = 0
+        introText.innerHTML = ""
       }
 
       const commandData = commands[currentCommandIndex]
