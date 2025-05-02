@@ -10,8 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (introText) {
     const commands = [
       { command: "whoami", response: "Joshua Hamsa" },
-      { command: "pwd", response: "/home/joshua" },
-      { command: "cat bio.txt", response: "Developer, creator, and continuous learner." },
+      { command: "pwd", response: "/home/hamsa" },
+      { command: "cat bio.txt", response: "Builder, creator, and continuous learner." },
     ]
 
     let currentCommandIndex = 0
