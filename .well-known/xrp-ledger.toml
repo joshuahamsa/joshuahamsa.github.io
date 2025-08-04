@@ -1,6 +1,9 @@
 [METADATA]
 version = "1.0"
 
+[DOMAIN]
+domain = "joshuahamsa.com"
+
 [[VALIDATORS]]
 public_key = "nHUdwCKijaKAD8NUUR8sKPV3Kj9F2EJW3E5Lsb62yod2T7kR2y9F"
 network = "main"
@@ -8,6 +11,3 @@ owner_country = "US"
 server_country = "US"
 unl = "https://vl.ripple.com"
 attestation="977C377FD69C5F8917A83A98BF2824E428C51A21F7DB705534F2A96E0CB811FB3E18303826DDF390D0B3C40852666196EE8D4926BFD7F3308B086B9AFE2F8F0F"
-
-[DOMAIN]
-domain = "joshuahamsa.com"
