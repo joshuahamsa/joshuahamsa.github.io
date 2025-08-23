@@ -12,7 +12,7 @@ server_country = "US"
 unl = "https://vl.ripple.com"
 attestation="977C377FD69C5F8917A83A98BF2824E428C51A21F7DB705534F2A96E0CB811FB3E18303826DDF390D0B3C40852666196EE8D4926BFD7F3308B086B9AFE2F8F0F"
 network_asn = 20001
-server_location = LFG HQ (Ventura, California)
+server_location = "LFG HQ (Ventura, California)"
 server_country = "US"
 server_cloud = false
 
