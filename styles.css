@@ -183,6 +183,20 @@ ul li::before {
   color: var(--text-color);
 }
 
+.project-meta {
+  margin-bottom: 0.5rem;
+}
+
+.project-date {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border: 1px solid #2f2f2f;
+  border-radius: 999px;
+  color: var(--secondary-color);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
 .project p {
   margin-bottom: 1rem;
   color: var(--secondary-color);
