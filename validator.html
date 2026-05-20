@@ -126,7 +126,9 @@
       lines.push(twoCol(`  load     ${span(loadCls, v.load_factor.toFixed(2))}`,
                         `  Up   ${span('green', formatUptime(s.uptime_s))}`));
       const peerCls = v.peers < 4 ? 'red' : v.peers < 10 ? 'amber' : 'green';
-      lines.push(twoCol(`  peers    ${span(peerCls, String(v.peers))}`, ``));
+      const tCls = s.cpu_temp_c >= 80 ? 'red' : s.cpu_temp_c >= 60 ? 'amber' : 'green';
+      const tempStr = s.cpu_temp_c !== null ? `  Temp ${span(tCls, s.cpu_temp_c + '°C')}` : '';
+      lines.push(twoCol(`  peers    ${span(peerCls, String(v.peers))}`, tempStr));
       lines.push(twoCol(`  version  ${span('dim', v.build_version)}`, ``));
 
 
