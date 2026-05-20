@@ -92,19 +92,27 @@
       const H39 = '═'.repeat(39);
       const lines = [];
 
-      // Header
+      // Header — 6-row block font banner, 59 visible chars each, 9-left 10-right pad
+      const BANNER = [
+        '██╗     ███████╗ ██████╗   ██╗  ██╗██████╗ ██████╗ ██╗     ',
+        '██║     ██╔════╝██╔════╝   ╚██╗██╔╝██╔══██╗██╔══██╗██║     ',
+        '██║     █████╗  ██║  ███╗   ╚███╔╝ ██████╔╝██████╔╝██║     ',
+        '██║     ██╔══╝  ██║   ██║   ██╔██╗ ██╔══██╗██╔═══╝ ██║     ',
+        '███████╗██║     ╚██████╔╝  ██╔╝ ██╗██║  ██║██║     ███████╗',
+        '╚══════╝╚═╝      ╚═════╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚══════╝',
+      ];
       lines.push(`╔${H78}╗`);
-      const title = 'LFG XRPL VALIDATOR';
-      const lp = Math.floor((78 - title.length) / 2);
-      lines.push(`║${' '.repeat(lp)}${span('magenta', title)}${' '.repeat(78 - title.length - lp)}║`);
+      for (const row of BANNER) {
+        lines.push(`║         ${span('magenta', row)}          ║`);
+      }
       const sub = `▸▸  ${id.domain}  ·  ${id.public_key_short}  ·  Manifest #${id.manifest_seq}  ◂◂`;
       const sp = Math.floor((78 - sub.length) / 2);
-      lines.push(`║${' '.repeat(sp)}${span('dim', sub)}${' '.repeat(78 - sub.length - sp)}║`);
+      lines.push(`║${' '.repeat(sp)}${span('white', sub)}${' '.repeat(78 - sub.length - sp)}║`);
 
       // Validator | System
       lines.push(`╠${H38}╦${H39}╣`);
-      lines.push(twoCol(` ${span('cyan', '── VALIDATOR')}${'─'.repeat(25)}`,
-                        ` ${span('cyan', '── SYSTEM')}${'─'.repeat(29)}`));
+      lines.push(twoCol(` ${span('cyan', '── VALIDATOR' + '─'.repeat(25))}`,
+                        ` ${span('cyan', '── SYSTEM' + '─'.repeat(29))}`));
 
       const sc = stateColor(v.state);
       lines.push(twoCol(`  state    ${span(sc, v.state)}`,
