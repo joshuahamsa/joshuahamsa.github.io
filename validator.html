@@ -181,15 +181,7 @@
       const cpuWStr = s.cpu_w !== null ? `  CPU W  ${span('white', s.cpu_w + 'W')}` : '';
       lines.push(twoCol(`  version  ${span('dim', v.build_version)}`, cpuWStr));
 
-
-      // Identity row
-      lines.push(`╠${H78}╣`);
-      const revCls = id.revoked ? 'red' : 'green';
-      const revLabel = id.revoked ? 'YES ⚠' : 'NO';
-      const identVisible = `  ◈ IDENTITY  Key: ${id.public_key_short}  ·  Domain: ${id.domain}  ·  Revoked: ${revLabel}`;
-      const identPad = ' '.repeat(Math.max(0, 78 - identVisible.length));
-      lines.push(`║  ${span('yellow', '◈ IDENTITY')}  Key: ${span('white', id.public_key_short)}  ·  Domain: ${span('white', id.domain)}  ·  Revoked: ${span(revCls, revLabel)}${identPad}║`);
-      lines.push(`╚${H78}╝`);
+      lines.push(`╚${H65}╝`);
 
       return lines;
     }
