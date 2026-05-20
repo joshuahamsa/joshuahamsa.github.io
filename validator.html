@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XRPL Validator — Joshua Hamsa</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="terminal-header">
+        <div class="terminal-buttons">
+          <span class="terminal-button"></span>
+          <span class="terminal-button"></span>
+          <span class="terminal-button"></span>
+        </div>
+        <div class="terminal-title">validator.joshuahamsa.com</div>
+      </div>
+    </header>
+
+    <main>
+      <div id="val-offline" class="val-offline" style="display:none">
+        <span class="val-red">[OFFLINE]</span> last seen: <span id="val-last-seen">—</span>
+      </div>
+      <pre id="val-pre" class="val-pre">connecting...</pre>
+      <div id="val-footer" class="val-footer val-dim">updated — · refreshing every 5s</div>
+    </main>
+  </div>
+
+  <script>
+    // Replace YOUR_TAILSCALE_HOSTNAME with the result of `tailscale status` on the server.
+    // Example: if your hostname is "validator", the URL is https://validator.ts.net/metrics
+    const METRICS_URL = 'https://YOUR_TAILSCALE_HOSTNAME.ts.net/metrics';
+    const FETCH_INTERVAL_MS = 5000;
+    const FETCH_TIMEOUT_MS = 4000;
+
+    let lastData = null;
+    let lastSeenAt = null;
+
+    // Right-pad an HTML string to `width` visible characters.
+    // Strips HTML tags before measuring so color spans don't inflate the count.
+    function rpad(html, width) {
+      const visible = html.replace(/<[^>]*>/g, '');
+      return html + ' '.repeat(Math.max(0, width - visible.length));
+    }
+
+    function span(cls, text) {
+      return `<span class="val-${cls}">${text}</span>`;
+    }
+
+    function progressBar(pct) {
+      const filled = Math.min(10, Math.floor(pct * 10 / 100));
+      const bar = '█'.repeat(filled) + '░'.repeat(10 - filled);
+      const cls = pct >= 81 ? 'red' : pct >= 61 ? 'amber' : 'green';
+      return span(cls, bar);
+    }
+
+    function pctSpan(pct) {
+      const cls = pct >= 81 ? 'red' : pct >= 61 ? 'amber' : 'green';
+      return span(cls, String(pct).padStart(3) + '%');
+    }
+
+    function formatUptime(secs) {
+      const d = Math.floor(secs / 86400);
+      const h = Math.floor((secs % 86400) / 3600);
+      const m = Math.floor((secs % 3600) / 60);
+      return `${d}d ${String(h).padStart(2, '0')}h ${String(m).padStart(2, '0')}m`;
+    }
+
+    function stateColor(state) {
+      if (state === 'proposing' || state === 'full') return 'green';
+      if (['connected', 'syncing', 'tracking'].includes(state)) return 'amber';
+      return 'red';
+    }
+
+    // Build a two-column row: left col = 38 visible chars, right col = 39.
+    function twoCol(left, right) {
+      return `║${rpad(left, 38)}║${rpad(right, 39)}║`;
+    }
+
+    function buildLines(data) {
+      const v = data.validator;
+      const id = data.identity;
+      const s = data.system;
+      const n = data.network;
+      const a = data.alerts;
+
+      const H78 = '═'.repeat(78);
+      const H38 = '═'.repeat(38);
+      const H39 = '═'.repeat(39);
+      const lines = [];
+
+      // Header
+      lines.push(`╔${H78}╗`);
+      const title = 'LFG XRPL VALIDATOR';
+      const lp = Math.floor((78 - title.length) / 2);
+      lines.push(`║${' '.repeat(lp)}${span('magenta', title)}${' '.repeat(78 - title.length - lp)}║`);
+      const sub = `▸▸  ${id.domain}  ·  ${id.public_key_short}  ·  Manifest #${id.manifest_seq}  ◂◂`;
+      const sp = Math.floor((78 - sub.length) / 2);
+      lines.push(`║${' '.repeat(sp)}${span('dim', sub)}${' '.repeat(78 - sub.length - sp)}║`);
+
+      // Validator | System
+      lines.push(`╠${H38}╦${H39}╣`);
+      lines.push(twoCol(` ${span('cyan', '── VALIDATOR')}${'─'.repeat(25)}`,
+                        ` ${span('cyan', '── SYSTEM')}${'─'.repeat(29)}`));
+
+      const sc = stateColor(v.state);
+      lines.push(twoCol(`  state    ${span(sc, v.state)}`,
+                        `  CPU  ${progressBar(s.cpu_pct)} ${pctSpan(s.cpu_pct)}`));
+      lines.push(twoCol(`  ledger   ${span('white', String(v.ledger_seq))}`,
+                        `  RAM  ${progressBar(s.ram_pct)} ${span(s.ram_pct >= 81 ? 'red' : s.ram_pct >= 61 ? 'amber' : 'green', s.ram_used_gb + '/' + s.ram_total_gb + 'G')}`));
+      const ageCls = v.ledger_age_s > 10 ? 'amber' : 'green';
+      lines.push(twoCol(`  age      ${span(ageCls, v.ledger_age_s + 's')}`,
+                        `  Disk ${progressBar(s.disk_pct)} ${pctSpan(s.disk_pct)}`));
+      const loadCls = v.load_factor > 1.0 ? 'amber' : 'green';
+      lines.push(twoCol(`  load     ${span(loadCls, v.load_factor.toFixed(2))}`,
+                        `  Up   ${span('green', formatUptime(s.uptime_s))}`));
+      const peerCls = v.peers < 4 ? 'red' : v.peers < 10 ? 'amber' : 'green';
+      lines.push(twoCol(`  peers    ${span(peerCls, String(v.peers))}`, ``));
+      lines.push(twoCol(`  version  ${span('dim', v.build_version)}`, ``));
+
+      // Network | Alerts
+      lines.push(`╠${H38}╬${H39}╣`);
+      lines.push(twoCol(` ${span('cyan', '── NETWORK')}${'─'.repeat(27)}`,
+                        ` ${span('cyan', '── ALERTS')}${'─'.repeat(29)}`));
+
+      const netRows = [
+        `  LAN       ${span('white', n.lan_ip)}`,
+        `  Tailscale ${span('white', n.tailscale_ip)}`,
+        `  SSH       ${span('white', n.ssh_sessions + ' active')}`,
+        `  P2P :51235 ${span(n.p2p_open ? 'green' : 'red', n.p2p_open ? 'OPEN' : 'CLOSED')}`,
+      ];
+      const alertRows = a.length > 0 ? a : ['no recent alerts'];
+      const maxRows = Math.max(netRows.length, alertRows.length);
+      for (let i = 0; i < maxRows; i++) {
+        const left = netRows[i] || '';
+        const raw = alertRows[i] || '';
+        const aCls = /err|error/i.test(raw) ? 'red' : /warn|wrn/i.test(raw) ? 'amber' : 'green';
+        const right = raw ? `  ${span(aCls, raw.slice(0, 37))}` : '';
+        lines.push(twoCol(left, right));
+      }
+
+      // Identity row
+      lines.push(`╠${H78}╣`);
+      const revCls = id.revoked ? 'red' : 'green';
+      const revLabel = id.revoked ? 'YES ⚠' : 'NO';
+      const identVisible = `  ◈ IDENTITY  Key: ${id.public_key_short}  ·  Domain: ${id.domain}  ·  Revoked: ${revLabel}`;
+      const identPad = ' '.repeat(Math.max(0, 78 - identVisible.length));
+      lines.push(`║  ${span('yellow', '◈ IDENTITY')}  Key: ${span('white', id.public_key_short)}  ·  Domain: ${span('white', id.domain)}  ·  Revoked: ${span(revCls, revLabel)}${identPad}║`);
+      lines.push(`╚${H78}╝`);
+
+      return lines;
+    }
+
+    function renderData(data) {
+      document.getElementById('val-pre').innerHTML = buildLines(data).join('\n');
+      document.getElementById('val-footer').textContent =
+        `updated ${data.timestamp} · refreshing every 5s`;
+    }
+
+    async function fetchMetrics() {
+      const controller = new AbortController();
+      const tid = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+      try {
+        const res = await fetch(METRICS_URL, { signal: controller.signal });
+        clearTimeout(tid);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        lastData = data;
+        lastSeenAt = new Date();
+        document.getElementById('val-offline').style.display = 'none';
+        document.getElementById('val-pre').classList.remove('val-dimmed');
+        renderData(data);
+      } catch (e) {
+        clearTimeout(tid);
+        if (lastSeenAt) {
+          document.getElementById('val-last-seen').textContent = lastSeenAt.toUTCString();
+          document.getElementById('val-offline').style.display = 'block';
+          document.getElementById('val-pre').classList.add('val-dimmed');
+          if (lastData) renderData(lastData);
+        }
+      }
+    }
+
+    fetchMetrics();
+    setInterval(fetchMetrics, FETCH_INTERVAL_MS);
+  </script>
+</body>
+</html>

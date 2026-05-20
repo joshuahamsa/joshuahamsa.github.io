@@ -421,3 +421,42 @@ footer {
     padding: 1.5rem;
   }
 }
+
+/* ── Validator dashboard ──────────────────────────────────────────────────── */
+
+.val-pre {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.4;
+  overflow-x: auto;
+  padding: 0;
+  margin: 0;
+  white-space: pre;
+  border: none;
+}
+
+.val-offline {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  padding: 4px 0 8px 0;
+}
+
+.val-footer {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  padding-top: 6px;
+}
+
+.val-dimmed { opacity: 0.45; }
+
+/* MOTD-matched color palette */
+.val-magenta { color: #c040c0; }
+.val-cyan    { color: #00ffff; }
+.val-yellow  { color: #ffff44; }
+.val-green   { color: var(--accent-color); }
+.val-red     { color: #ff4444; }
+.val-amber   { color: #cc8800; }
+.val-white   { color: #f0f0f0; }
+.val-dim     { opacity: 0.45; }
