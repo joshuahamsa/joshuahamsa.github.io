@@ -121,26 +121,6 @@
       lines.push(twoCol(`  peers    ${span(peerCls, String(v.peers))}`, ``));
       lines.push(twoCol(`  version  ${span('dim', v.build_version)}`, ``));
 
-      // Network | Alerts
-      lines.push(`╠${H38}╬${H39}╣`);
-      lines.push(twoCol(` ${span('cyan', '── NETWORK')}${'─'.repeat(27)}`,
-                        ` ${span('cyan', '── ALERTS')}${'─'.repeat(29)}`));
-
-      const netRows = [
-        `  LAN       ${span('white', n.lan_ip)}`,
-        `  Tailscale ${span('white', n.tailscale_ip)}`,
-        `  SSH       ${span('white', n.ssh_sessions + ' active')}`,
-        `  P2P :51235 ${span(n.p2p_open ? 'green' : 'red', n.p2p_open ? 'OPEN' : 'CLOSED')}`,
-      ];
-      const alertRows = a.length > 0 ? a : ['no recent alerts'];
-      const maxRows = Math.max(netRows.length, alertRows.length);
-      for (let i = 0; i < maxRows; i++) {
-        const left = netRows[i] || '';
-        const raw = alertRows[i] || '';
-        const aCls = /err|error/i.test(raw) ? 'red' : /warn|wrn/i.test(raw) ? 'amber' : 'green';
-        const right = raw ? `  ${span(aCls, raw.slice(0, 37))}` : '';
-        lines.push(twoCol(left, right));
-      }
 
       // Identity row
       lines.push(`╠${H78}╣`);
