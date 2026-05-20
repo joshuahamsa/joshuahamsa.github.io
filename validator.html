@@ -75,9 +75,9 @@
       return 'red';
     }
 
-    // Build a two-column row: left col = 38 visible chars, right col = 39.
+    // Build a two-column row: left col = 30 visible chars, right col = 34.
     function twoCol(left, right) {
-      return `║${rpad(left, 38)}║${rpad(right, 39)}║`;
+      return `║${rpad(left, 30)}║${rpad(right, 34)}║`;
     }
 
     function buildAmendmentLines(amendments) {
@@ -134,9 +134,9 @@
       const n = data.network;
       const a = data.alerts;
 
-      const H78 = '═'.repeat(78);
-      const H38 = '═'.repeat(38);
-      const H39 = '═'.repeat(39);
+      const H65 = '═'.repeat(65);
+      const H30 = '═'.repeat(30);
+      const H34 = '═'.repeat(34);
       const lines = [];
 
       // Header — 6-row block font banner, 59 visible chars each, 9-left 10-right pad
@@ -148,7 +148,7 @@
         '███████╗██║     ╚██████╔╝  ██╔╝ ██╗██║  ██║██║     ███████╗',
         '╚══════╝╚═╝      ╚═════╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚══════╝',
       ];
-      lines.push(`╔${H78}╗`);
+      lines.push(`╔${H65}╗`);
       for (const row of BANNER) {
         lines.push(`║         ${span('magenta', row)}          ║`);
       }
@@ -157,10 +157,10 @@
       lines.push(`║${' '.repeat(sp)}${span('white', sub)}${' '.repeat(78 - sub.length - sp)}║`);
 
       // Validator | System
-      lines.push(`╠${H38}╦${H39}╣`);
+      lines.push(`╠${H30}╦${H34}╣`);
       lines.push(twoCol(
-        span('cyan', '─'.repeat(13) + ' VALIDATOR ' + '─'.repeat(14)),
-        span('cyan', '─'.repeat(15) + ' SYSTEM ' + '─'.repeat(16))
+        span('cyan', '─'.repeat(9) + ' VALIDATOR ' + '─'.repeat(10)),
+        span('cyan', '─'.repeat(13) + ' SYSTEM ' + '─'.repeat(13))
       ));
 
       const sc = stateColor(v.state);
