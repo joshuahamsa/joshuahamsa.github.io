@@ -150,11 +150,11 @@
       ];
       lines.push(`╔${H65}╗`);
       for (const row of BANNER) {
-        lines.push(`║         ${span('magenta', row)}          ║`);
+        lines.push(`║   ${span('magenta', row)}   ║`);
       }
-      const sub = `▸▸  ${id.domain}  ·  ${id.public_key_short}  ·  Manifest #${id.manifest_seq}  ◂◂`;
-      const sp = Math.floor((78 - sub.length) / 2);
-      lines.push(`║${' '.repeat(sp)}${span('white', sub)}${' '.repeat(78 - sub.length - sp)}║`);
+      const sub = `▸▸  ${id.domain}  ·  ${id.public_key_short}  ◂◂`;
+      const sp = Math.floor((65 - sub.length) / 2);
+      lines.push(`║${' '.repeat(sp)}${span('white', sub)}${' '.repeat(65 - sub.length - sp)}║`);
 
       // Validator | System
       lines.push(`╠${H30}╦${H34}╣`);
