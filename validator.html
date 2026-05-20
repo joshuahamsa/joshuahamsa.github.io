@@ -81,33 +81,33 @@
     }
 
     function buildAmendmentLines(amendments) {
-      const H78 = '═'.repeat(78);
+      const H65 = '═'.repeat(65);
       const lines = [];
 
       if (amendments === null || amendments === undefined) {
-        lines.push(`╔${H78}╗`);
-        lines.push(`║${rpad(span('dim', '  retrieving...'), 78)}║`);
-        lines.push(`╚${H78}╝`);
+        lines.push(`╔${H65}╗`);
+        lines.push(`║${rpad(span('dim', '  retrieving...'), 65)}║`);
+        lines.push(`╚${H65}╝`);
         return lines;
       }
 
       // Centered header
       const label = `PENDING AMENDMENTS (${amendments.length})`;
-      const dashes = 78 - label.length - 2;
+      const dashes = 65 - label.length - 2;
       const ldash = Math.floor(dashes / 2);
       const rdash = dashes - ldash;
-      lines.push(`╔${H78}╗`);
+      lines.push(`╔${H65}╗`);
       lines.push(`║${span('cyan', '─'.repeat(ldash) + ' ' + label + ' ' + '─'.repeat(rdash))}║`);
 
       if (amendments.length === 0) {
-        lines.push(`║${rpad(span('dim', '  no pending amendments'), 78)}║`);
-        lines.push(`╚${H78}╝`);
+        lines.push(`║${rpad(span('dim', '  no pending amendments'), 65)}║`);
+        lines.push(`╚${H65}╝`);
         return lines;
       }
 
       // Column headers
-      lines.push(`║${rpad('  Name' + ' '.repeat(31) + '  Vote   Status', 78)}║`);
-      lines.push(`║${rpad('  ' + '─'.repeat(74), 78)}║`);
+      lines.push(`║${rpad('  Name' + ' '.repeat(22) + 'Vote  Status', 65)}║`);
+      lines.push(`║${rpad('  ' + '─'.repeat(61), 65)}║`);
 
       for (const a of amendments) {
         const voteStr = a.vote === 'yes' ? span('green', 'YES') : span('red', 'NO ');
@@ -119,11 +119,11 @@
         } else {
           status = 'pending'; sCls = 'dim';
         }
-        const row = `  ${rpad(a.name, 35)}  ${voteStr}   ${span(sCls, status)}`;
-        lines.push(`║${rpad(row, 78)}║`);
+        const row = `  ${rpad(a.name, 24)}  ${voteStr}  ${span(sCls, status)}`;
+        lines.push(`║${rpad(row, 65)}║`);
       }
 
-      lines.push(`╚${H78}╝`);
+      lines.push(`╚${H65}╝`);
       return lines;
     }
 
