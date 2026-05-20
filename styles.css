@@ -428,7 +428,7 @@ footer {
   background-color: var(--bg-color);
   color: var(--text-color);
   font-family: 'Courier New', monospace;
-  font-size: 14px;
+  font-size: min(14px, calc((100vw - 2rem) / 40));
   line-height: 1.4;
   overflow-x: auto;
   padding: 0;
