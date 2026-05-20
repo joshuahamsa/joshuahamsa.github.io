@@ -25,6 +25,7 @@
         <span class="val-red">[OFFLINE]</span> last seen: <span id="val-last-seen">—</span>
       </div>
       <pre id="val-pre" class="val-pre">connecting...</pre>
+      <pre id="amd-pre" class="val-pre">connecting...</pre>
       <div id="val-footer" class="val-footer val-dim">updated — · refreshing every 5s</div>
     </main>
   </div>
@@ -77,6 +78,53 @@
     // Build a two-column row: left col = 38 visible chars, right col = 39.
     function twoCol(left, right) {
       return `║${rpad(left, 38)}║${rpad(right, 39)}║`;
+    }
+
+    function buildAmendmentLines(amendments) {
+      const H78 = '═'.repeat(78);
+      const lines = [];
+
+      if (amendments === null || amendments === undefined) {
+        lines.push(`╔${H78}╗`);
+        lines.push(`║${rpad(span('dim', '  retrieving...'), 78)}║`);
+        lines.push(`╚${H78}╝`);
+        return lines;
+      }
+
+      // Centered header
+      const label = `PENDING AMENDMENTS (${amendments.length})`;
+      const dashes = 78 - label.length - 2;
+      const ldash = Math.floor(dashes / 2);
+      const rdash = dashes - ldash;
+      lines.push(`╔${H78}╗`);
+      lines.push(`║${span('cyan', '─'.repeat(ldash) + ' ' + label + ' ' + '─'.repeat(rdash))}║`);
+
+      if (amendments.length === 0) {
+        lines.push(`║${rpad(span('dim', '  no pending amendments'), 78)}║`);
+        lines.push(`╚${H78}╝`);
+        return lines;
+      }
+
+      // Column headers
+      lines.push(`║${rpad('  Name' + ' '.repeat(31) + '  Vote   Status', 78)}║`);
+      lines.push(`║${rpad('  ' + '─'.repeat(74), 78)}║`);
+
+      for (const a of amendments) {
+        const voteStr = a.vote === 'yes' ? span('green', 'YES') : span('red', 'NO ');
+        let status, sCls;
+        if (a.majority) {
+          status = '★ MAJORITY'; sCls = 'amber';
+        } else if (!a.supported) {
+          status = 'pending · unsupported'; sCls = 'dim';
+        } else {
+          status = 'pending'; sCls = 'dim';
+        }
+        const row = `  ${rpad(a.name, 35)}  ${voteStr}   ${span(sCls, status)}`;
+        lines.push(`║${rpad(row, 78)}║`);
+      }
+
+      lines.push(`╚${H78}╝`);
+      return lines;
     }
 
     function buildLines(data) {
@@ -148,6 +196,8 @@
 
     function renderData(data) {
       document.getElementById('val-pre').innerHTML = buildLines(data).join('\n');
+      document.getElementById('amd-pre').innerHTML =
+        buildAmendmentLines(data.amendments).join('\n');
       document.getElementById('val-footer').textContent =
         `updated ${data.timestamp} · refreshing every 5s`;
     }
