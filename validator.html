@@ -110,8 +110,10 @@
 
       // Validator | System
       lines.push(`╠${H38}╦${H39}╣`);
-      lines.push(twoCol(` ${span('cyan', '── VALIDATOR' + '─'.repeat(25))}`,
-                        ` ${span('cyan', '── SYSTEM' + '─'.repeat(29))}`));
+      lines.push(twoCol(
+        span('cyan', '─'.repeat(13) + ' VALIDATOR ' + '─'.repeat(14)),
+        span('cyan', '─'.repeat(15) + ' SYSTEM ' + '─'.repeat(16))
+      ));
 
       const sc = stateColor(v.state);
       lines.push(twoCol(`  state    ${span(sc, v.state)}`,
