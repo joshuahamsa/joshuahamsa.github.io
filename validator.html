@@ -129,7 +129,8 @@
       const tCls = s.cpu_temp_c >= 80 ? 'red' : s.cpu_temp_c >= 60 ? 'amber' : 'green';
       const tempStr = s.cpu_temp_c !== null ? `  Temp ${span(tCls, s.cpu_temp_c + '°C')}` : '';
       lines.push(twoCol(`  peers    ${span(peerCls, String(v.peers))}`, tempStr));
-      lines.push(twoCol(`  version  ${span('dim', v.build_version)}`, ``));
+      const cpuWStr = s.cpu_w !== null ? `  CPU W  ${span('white', s.cpu_w + 'W')}` : '';
+      lines.push(twoCol(`  version  ${span('dim', v.build_version)}`, cpuWStr));
 
 
       // Identity row
