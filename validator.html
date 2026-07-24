@@ -1,4 +1,17 @@
 <!DOCTYPE html>
+<!--
+  ⚠ MIRROR REQUIRED — this is the DEPLOY copy, not the source of truth.
+
+  Upstream lives in the joshuahamsa/LFG-XRPL-Validator-Dashboard repo at
+  frontend/validator.html (locally ~/validator-node). Fixes made only here
+  will be lost or re-diverge the next time upstream is edited, so mirror any
+  change back.
+
+  Known intentional divergences from upstream (do NOT "fix" by copying over):
+    - METRICS_URL is set to the live Funnel endpoint here; upstream ships it
+      empty for setup.sh to fill in.
+    - Upstream has a "METRICS_URL not configured" guard that this copy omits.
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
