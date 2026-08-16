@@ -25,6 +25,6 @@ website = "https://joshuahamsa.com"
 [[VALIDATOR_SPEC]]
 CPU = "Xeon(R) E5-2690 8-Core 16-Thread 2.9Ghz"
 MEMORY = "64GB DDR4 2666 Mhz"
-DISK = "1 x 500MB SSD SATA 6GB/s"
+DISK = "1 x 500GB SSD SATA 6GB/s"
 OS = "Linux"
 CONNECTIVITY = "800 Mbps"
