@@ -19,6 +19,20 @@
   <title>XRPL Validator — Joshua Hamsa</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <meta name="description" content="Live dashboard for the joshuahamsa.com XRP Ledger validator — consensus state, ledger, peers, system health, and amendment votes, refreshed every 5 seconds.">
+  <link rel="canonical" href="https://joshuahamsa.com/validator.html">
+  <meta name="theme-color" content="#0f0f0f">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Joshua Hamsa">
+  <meta property="og:title" content="XRPL Validator — joshuahamsa.com">
+  <meta property="og:description" content="Live dashboard for a home-run XRP Ledger validator: consensus state, ledger, peers, system health, and amendment votes.">
+  <meta property="og:url" content="https://joshuahamsa.com/validator.html">
+  <meta property="og:image" content="https://joshuahamsa.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@joshuahamsa">
 </head>
 <body>
   <div class="container">
@@ -31,11 +45,15 @@
         </div>
         <div class="terminal-title">joshuahamsa.com/validator.html</div>
       </div>
+
+      <div class="blog-nav">
+        <a href="/" class="terminal-link"><span class="prompt">$</span> cd ..</a>
+      </div>
     </header>
 
     <main>
       <div id="val-offline" class="val-offline" style="display:none">
-        <span class="val-red">[OFFLINE]</span> last seen: <span id="val-last-seen">—</span>
+        <span class="val-red">[OFFLINE]</span> <span id="val-last-seen-label">last seen:</span> <span id="val-last-seen">—</span>
       </div>
       <pre id="val-pre" class="val-pre">connecting...</pre>
       <pre id="amd-pre" class="val-pre">connecting...</pre>
@@ -239,15 +257,22 @@
         lastData = data;
         lastSeenAt = new Date();
         document.getElementById('val-offline').style.display = 'none';
+        document.getElementById('val-last-seen-label').textContent = 'last seen:';
         document.getElementById('val-pre').classList.remove('val-dimmed');
         renderData(data);
       } catch (e) {
         clearTimeout(tid);
+        document.getElementById('val-offline').style.display = 'block';
         if (lastSeenAt) {
           document.getElementById('val-last-seen').textContent = lastSeenAt.toUTCString();
-          document.getElementById('val-offline').style.display = 'block';
           document.getElementById('val-pre').classList.add('val-dimmed');
           if (lastData) renderData(lastData);
+        } else {
+          // Never connected this session — don't leave "connecting..." up forever.
+          document.getElementById('val-last-seen-label').textContent = 'unable to reach validator';
+          document.getElementById('val-last-seen').textContent = '— retrying every 5s';
+          document.getElementById('val-pre').textContent = '';
+          document.getElementById('amd-pre').textContent = '';
         }
       }
     }

@@ -6,7 +6,20 @@
   <title>Joshua Hamsa</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <meta name="description" content="Personal site of Joshua Hamsa - Builder, Creator, Learner">
+  <meta name="description" content="Joshua Hamsa — solar engineer, XRPL validator operator, and builder. Projects, notes, and a live validator dashboard.">
+  <link rel="canonical" href="https://joshuahamsa.com/">
+  <meta name="theme-color" content="#0f0f0f">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Joshua Hamsa">
+  <meta property="og:title" content="Joshua Hamsa">
+  <meta property="og:description" content="Solar engineer, XRPL validator operator, and builder. Projects, notes, and a live validator dashboard.">
+  <meta property="og:url" content="https://joshuahamsa.com/">
+  <meta property="og:image" content="https://joshuahamsa.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="joshuahamsa.com — a terminal window reading: whoami, Joshua Hamsa">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@joshuahamsa">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -24,7 +37,8 @@
         <div class="terminal-title">joshuahamsa.com</div>
       </div>
       
-      <div class="intro">
+      <h1 class="sr-only">Joshua Hamsa</h1>
+      <div class="intro" aria-hidden="true">
         <div class="typing-effect" id="intro-text">
           <span class="prompt">$</span> <span class="command">whoami</span>
           <div class="response">Joshua Hamsa</div>
@@ -57,6 +71,17 @@
           <span class="prompt">$</span> <span class="command">ls -la projects/</span>
         </div>
         <div class="section-content">
+          <div class="project">
+            <h3>XRPL Validator Dashboard</h3>
+            <div class="project-meta">
+              <span class="project-date">2026-05-20</span>
+            </div>
+            <p>Live cyberpunk terminal dashboard for my XRPL validator node — real-time ledger, system, and amendment voting stats.</p>
+            <div class="project-links">
+              <a href="/validator.html">cd /validator</a>
+            </div>
+          </div>
+
           <div class="project">
             <h3>Obsidian Biblehub Plugin</h3>
             <div class="project-meta">
@@ -112,17 +137,6 @@
             </div>
           </div>
 
-          <div class="project">
-            <h3>XRPL Validator Dashboard</h3>
-            <div class="project-meta">
-              <span class="project-date">2026-05-20</span>
-            </div>
-            <p>Live cyberpunk terminal dashboard for my XRPL validator node — real-time ledger, system, and network stats.</p>
-            <div class="project-links">
-              <a href="/validator.html">cd /validator</a>
-            </div>
-          </div>
-
           <!-- Add more projects as needed -->
         </div>
       </section>
@@ -151,7 +165,7 @@
         <div class="blog-list">
           <div class="blog-item">
             <div class="blog-item-header">
-              <span class="blog-date">2024-05-10</span>
+              <span class="blog-date">2025-05-01</span>
               <a href="blog/learning-dev.html" class="blog-title">learning-dev.md</a>
             </div>
             <div class="blog-excerpt">
@@ -164,12 +178,11 @@
           
           <div class="blog-item">
             <div class="blog-item-header">
-              <span class="blog-date">2024-05-01</span>
+              <span class="blog-date">2025-05-01</span>
               <a href="blog/hello-world.html" class="blog-title">hello-world.md</a>
             </div>
             <div class="blog-excerpt">
-              This is my first post.</p>
-              
+              This is my first post.
               <pre><code>console.log("Hello, World!");</code></pre>
             </div>
             <div class="blog-read-more">
@@ -177,10 +190,7 @@
             </div>
           </div>
         </div>
-        
-        <div class="blog-nav">
-          <span class="terminal-link disabled" aria-disabled="true"><span class="prompt">$</span> ls --page=2</span>
-        </div>
+
       </div>
     </section>
 
@@ -189,9 +199,9 @@
         <span class="prompt">$</span> <span class="command">contact --info</span>
         <div class="response">
           <div class="social-links">
-            <a href="https://github.com/joshuahamsa" target="_blank">GitHub</a>
-            <a href="https://linkedin.com/in/joshuahamsa" target="_blank">LinkedIn</a>
-            <a href="https://x.com/joshuahamsa" target="_blank">X</a>
+            <a href="https://github.com/joshuahamsa" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://linkedin.com/in/joshuahamsa" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a href="https://x.com/joshuahamsa" target="_blank" rel="noopener noreferrer">X</a>
             <a href="mailto:josh.hamsa@gmail.com">Email</a>
           </div>
         </div>
