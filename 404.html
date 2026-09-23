@@ -27,13 +27,13 @@
     <main>
       <section>
         <div class="section-header">
-          <span class="prompt">$</span> <span class="command">cd <span id="missing-path">/this/page</span></span>
+          <span class="prompt" aria-hidden="true"><span class="prompt-line"><span class="sticker sticker--lfg">LFG!</span> <span class="sticker sticker--dir">~</span> <span class="sticker sticker--time">&#xf017; <span class="prompt-time">--:--</span></span></span><span class="prompt-char">❯</span></span> <span class="command">cd <span id="missing-path">/this/page</span></span>
         </div>
         <div class="section-content">
-          <h1 class="notfound-error">bash: cd: <span id="missing-path-err">/this/page</span>: No such file or directory</h1>
+          <h1 class="notfound-error">cd: no such file or directory: <span id="missing-path-err">/this/page</span></h1>
           <p class="notfound-hint">The page you're looking for moved, never existed, or was a typo. Try one of these:</p>
           <div class="notfound-prompt">
-            <span class="prompt">$</span> <span class="command">ls /</span>
+            <span class="prompt" aria-hidden="true"><span class="prompt-line"><span class="sticker sticker--lfg">LFG!</span> <span class="sticker sticker--dir">~</span> <span class="sticker sticker--time">&#xf017; <span class="prompt-time">--:--</span></span></span><span class="prompt-char prompt-char--error">❯</span></span> <span class="command">ls /</span>
           </div>
           <ul>
             <li><a href="/" class="terminal-link">index.html</a> <span class="notfound-desc"># home</span></li>
@@ -43,7 +43,7 @@
             <li><a href="/blog/hello-world.html" class="terminal-link">blog/hello-world.md</a></li>
           </ul>
           <div class="notfound-prompt">
-            <span class="prompt">$</span> <span class="cursor"></span>
+            <span class="prompt" aria-hidden="true"><span class="prompt-line"><span class="sticker sticker--lfg">LFG!</span> <span class="sticker sticker--dir">~</span> <span class="sticker sticker--time">&#xf017; <span class="prompt-time">--:--</span></span></span><span class="prompt-char">❯</span></span> <span class="cursor"></span>
           </div>
         </div>
       </section>
@@ -57,5 +57,6 @@
     document.getElementById("missing-path").textContent = path
     document.getElementById("missing-path-err").textContent = path
   </script>
+  <script src="/script.js"></script>
 </body>
 </html>
