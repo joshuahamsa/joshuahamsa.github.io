@@ -7,7 +7,23 @@
   --terminal-header: #1a1a1a;
   --link-color: #4a9eff;
   --link-hover: #66b3ff;
+  /* LFG palette, from my Starship config */
+  --lfg-builder-orange: #D89030;
+  --lfg-effing-red: #D84830;
+  --lfg-go-blue: #4890C0;
+  --lfg-hardhat-yellow: #F0D848;
+  --lfg-super-green: #3DA35D;
+  --lfg-ink: #0A0A0A;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
+}
+
+/* Nerd Font icons used by the prompt (branch, clock, warning), subset from
+   JetBrains Mono Nerd Font. unicode-range keeps it to just those glyphs. */
+@font-face {
+  font-family: "Nerd Icons";
+  src: url("/assets/fonts/nerd-icons.woff2") format("woff2");
+  unicode-range: U+E0A0, U+F017, U+F071;
+  font-display: swap;
 }
 
 * {
@@ -99,9 +115,52 @@ body {
   line-height: 1.8;
 }
 
+/* Starship prompt (LFG config): a row of rounded "stickers", then ❯ */
 .prompt {
-  color: var(--accent-color);
-  margin-right: 0.5rem;
+  font-family: "Nerd Icons", var(--font-mono);
+  white-space: nowrap;
+}
+
+.prompt-line {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.sticker {
+  display: inline-block;
+  padding: 0 1ch;
+  border-radius: 999px;
+  line-height: 1.5;
+  color: var(--lfg-ink);
+  font-weight: bold;
+}
+
+.sticker--lfg,
+.sticker--mainnet {
+  background-color: var(--lfg-effing-red);
+}
+
+.sticker--dir {
+  background-color: var(--lfg-builder-orange);
+}
+
+.sticker--git {
+  background-color: var(--lfg-go-blue);
+  font-weight: normal;
+}
+
+.sticker--time {
+  background-color: var(--lfg-hardhat-yellow);
+}
+
+.prompt-char {
+  color: var(--lfg-super-green);
+  font-weight: bold;
+}
+
+/* ❯ turns red when the previous command exited non-zero */
+.prompt-char--error {
+  color: var(--lfg-effing-red);
 }
 
 .command {
@@ -112,6 +171,10 @@ body {
   margin-top: 0.5rem;
   margin-bottom: 1rem;
   padding-left: 1.5rem;
+}
+
+.no-output {
+  margin-bottom: 1rem;
 }
 
 .cursor {
