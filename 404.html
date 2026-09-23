@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404: command not found — Joshua Hamsa</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0f0f0f">
+  <!-- Absolute paths: GitHub Pages serves this file at whatever URL was missed -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="terminal-header">
+        <div class="terminal-buttons">
+          <span class="terminal-button"></span>
+          <span class="terminal-button"></span>
+          <span class="terminal-button"></span>
+        </div>
+        <div class="terminal-title">joshuahamsa.com — 404</div>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <div class="section-header">
+          <span class="prompt">$</span> <span class="command">cd <span id="missing-path">/this/page</span></span>
+        </div>
+        <div class="section-content">
+          <h1 class="notfound-error">bash: cd: <span id="missing-path-err">/this/page</span>: No such file or directory</h1>
+          <p class="notfound-hint">The page you're looking for moved, never existed, or was a typo. Try one of these:</p>
+          <div class="notfound-prompt">
+            <span class="prompt">$</span> <span class="command">ls /</span>
+          </div>
+          <ul>
+            <li><a href="/" class="terminal-link">index.html</a> <span class="notfound-desc"># home</span></li>
+            <li><a href="/validator.html" class="terminal-link">validator.html</a> <span class="notfound-desc"># live XRPL validator dashboard</span></li>
+            <li><a href="/blog/learning-dev.html" class="terminal-link">blog/learning-dev.md</a></li>
+            <li><a href="/blog/hello-world.html" class="terminal-link">blog/hello-world.md</a></li>
+          </ul>
+          <div class="notfound-prompt">
+            <span class="prompt">$</span> <span class="cursor"></span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // textContent, not innerHTML: the path comes from the URL and must not be parsed as markup
+    let path = window.location.pathname
+    try { path = decodeURIComponent(path) } catch (e) { /* malformed %-escape: show it raw */ }
+    document.getElementById("missing-path").textContent = path
+    document.getElementById("missing-path-err").textContent = path
+  </script>
+</body>
+</html>
