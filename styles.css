@@ -14,6 +14,7 @@
   --lfg-hardhat-yellow: #F0D848;
   --lfg-super-green: #3DA35D;
   --lfg-ink: #0A0A0A;
+  --lfg-canvas: #ECEAE4;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
 }
 
@@ -599,15 +600,26 @@ footer {
 
 .val-dimmed { opacity: 0.45; }
 
-/* MOTD-matched color palette */
-.val-magenta { color: #c040c0; }
-.val-cyan    { color: #00ffff; }
-.val-yellow  { color: #ffff44; }
-.val-green   { color: var(--accent-color); }
-.val-red     { color: #ff4444; }
-.val-amber   { color: #cc8800; }
-.val-white   { color: #f0f0f0; }
-.val-dim     { opacity: 0.45; }
+/* Starship prompt above each panel (same markup as the site's section headers) */
+.val-prompt {
+  font-size: 14px;
+  margin: 1.5rem 0 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .val-prompt {
+    font-size: 12px;
+  }
+}
+
+/* LFG palette, same values as the MOTD's truecolor codes */
+.val-orange { color: var(--lfg-builder-orange); }
+.val-red    { color: var(--lfg-effing-red); }
+.val-blue   { color: var(--lfg-go-blue); }
+.val-yellow { color: var(--lfg-hardhat-yellow); }
+.val-green  { color: var(--lfg-super-green); }
+.val-canvas { color: var(--lfg-canvas); }
+.val-dim    { opacity: 0.45; }
 
 /* 404 page */
 .notfound-error {
