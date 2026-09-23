@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Running an XRPL Validator From Home - Joshua Hamsa</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="icon" href="../favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="description" content="How I run an XRP Ledger validator on refurbished hardware at home, powered by solar: the setup, the 11.5-hour outage that taught me the most, and what I'd tell a new operator.">
+  <link rel="canonical" href="https://joshuahamsa.com/blog/home-validator.html">
+  <meta name="theme-color" content="#0f0f0f">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Joshua Hamsa">
+  <meta property="og:title" content="Running an XRPL Validator From Home">
+  <meta property="og:description" content="Refurbished hardware, rooftop solar, and an 11.5-hour outage that taught me more than anything else.">
+  <meta property="og:url" content="https://joshuahamsa.com/blog/home-validator.html">
+  <meta property="og:image" content="https://joshuahamsa.com/og-image.png">
+  <meta property="article:published_time" content="2026-09-23">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@joshuahamsa">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="terminal-header">
+        <div class="terminal-buttons">
+          <span class="terminal-button"></span>
+          <span class="terminal-button"></span>
+          <span class="terminal-button"></span>
+        </div>
+        <div class="terminal-title">blog/home-validator.md</div>
+      </div>
+
+      <div class="blog-nav">
+        <a href="../index.html" class="terminal-link"><span class="prompt">$</span> cd ..</a>
+      </div>
+    </header>
+
+    <main class="blog-post">
+      <div class="post-header">
+        <h1>Running an XRPL Validator From Home</h1>
+        <div class="post-meta">
+          <time class="post-date" datetime="2026-09-23">2026-09-23</time>
+          <span class="post-tags">
+            <span class="tag">xrpl</span>
+            <span class="tag">validator</span>
+            <span class="tag">homelab</span>
+            <span class="tag">solar</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="post-content">
+        <p>For about three years I've been running XRP Ledger infrastructure, and today that means one validator on mainnet. It runs on refurbished hardware at my house, powered by the sun during the day and a battery at night. It isn't on the default UNL, and the only person who depends on it is me. It's still been one of the best learning experiences I've had in tech.</p>
+
+        <p>This is a write-up of how it's built, the outage that taught me the most, and what I'd tell someone starting out. You can watch the node live on the <a href="/validator.html">validator dashboard</a>.</p>
+
+        <figure>
+          <img src="../assets/blog/home-validator/validator-banner.svg" width="728" height="216" alt="joshuahamsa.com XRPL validator: self-hosted bare metal in Ventura, California; stock xrpld 3.4.0; home connection at about 700 megabits down and 23 up; Xeon E5-2690 v2, 10 cores, 64 GB RAM, Samsung 990 PRO 2 TB NVMe.">
+        </figure>
+
+        <h2>The hardware</h2>
+
+        <p>The whole machine cost less than a thousand dollars, mostly refurbished parts from Newegg and eBay:</p>
+        <ul>
+          <li>A refurbished Dell Precision T3610 workstation with 64 GB of RAM</li>
+          <li>A refurbished Xeon E5-2690, later swapped for an E5-2690 v2 (10 cores, 20 threads, 3.0 GHz)</li>
+          <li>A new Samsung 870 SATA SSD, 500 GB, which now only boots the OS</li>
+          <li>A Samsung 990 PRO 2 TB NVMe drive, added later, which now holds the OS and the ledger data</li>
+          <li>An RTX 2060 I added later and wouldn't buy again</li>
+        </ul>
+
+        <p>It runs Ubuntu 22.04 LTS with the NuDB backend. A validator doesn't need to serve history, so xrpld deletes old ledgers as it goes. I keep a day or two's worth (<code>online_delete=25000</code>), and the ledger store sits at about 34 GB.</p>
+
+        <p>What surprised me is how little of the machine the validator actually uses. CPU load sits around 2.8 on 20 threads and the load factor stays at 1. The two things that have actually hurt it are disk writes and RAM.</p>
+
+        <h2>The drive I was quietly wearing out</h2>
+
+        <p>For a long time I kept as little history as I could: <code>online_delete=512</code>, about half an hour of ledgers, and a store of about 12 GB. Less data seemed like less work for the disk. It's the opposite.</p>
+
+        <p>Online deletion works in rotations. Every <code>online_delete</code> ledgers, xrpld creates a new, empty NuDB database and copies the entire current ledger state into it, then drops the old one. NuDB is expensive to fill from zero. Every batch write updates its hash index twice (once in a log, once in the key file) with several fsyncs per batch. Because the hash keys are random, each batch touches buckets all over the index, and the index keeps splitting buckets as the new database grows. When I measured it, the data file was growing about 2.5 MB/s while total writes ran about 91 MB/s: roughly 35× overhead.</p>
+
+        <p>That cost is paid once per rotation, so total writes scale with how often rotations happen, and at 512 that was 43 times a day. By the end the rotations were running back to back:</p>
+
+        <div class="table-scroll">
+        <table>
+          <thead>
+            <tr><th><code>online_delete</code></th><th>Rotations/day</th><th>Est. writes/day</th><th>2 TB 990 PRO lasts</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>512 (what I ran)</td><td>43, nonstop</td><td>~7 TB</td><td>~6 months</td></tr>
+            <tr><td>2000 (xrpl.org default)</td><td>~11</td><td>~1.3 TB</td><td>~2.5 years</td></tr>
+            <tr><td>25000 (what I run now)</td><td>~1</td><td>~0.2–0.3 TB</td><td>10+ years</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <p>That's what was grinding down the original SATA SSD. The ledger data and the OS now live on the NVMe drive, the SATA drive only boots the machine, and with <code>online_delete</code> at 25000 the node rotates about once a day. The store is bigger, but the disk does a small fraction of the work.</p>
+
+        <h2>The power</h2>
+
+        <p>I'm a solar engineer, so of course the validator runs on sunshine. Rooftop PV charges a whole-home Powerwall 3. An APC UPS bridges the server through the grid-to-battery cutover, and a separate DC UPS does the same for the modem, router, and switch. The microinverters are grid-forming, so if the utility goes down for days, the panels can still recharge the battery. A utility outage causes no downtime, and the node costs me nothing per month to power.</p>
+
+        <figure>
+          <img src="../assets/blog/home-validator/validator-topology.svg" width="728" height="452" alt="Topology diagram. XRPL peers connect to xrpld 3.4.0 on a home bare metal host with a static IP. xrpld is memory-capped at 36 GB soft and 44 GB hard, and its RPC is LAN-only. A monitoring stack on the same host feeds a read-only public metrics endpoint over TLS. Power chain: the utility grid and rooftop PV with grid-forming IQ8 microinverters feed a Powerwall 3; an APC UPS bridges the validator host and a DC UPS bridges the modem, router, and switch.">
+          <figcaption>How the node and its power are wired together.</figcaption>
+        </figure>
+
+        <h2>How it's set up</h2>
+
+        <p>Most of what I've gotten right here I owe to an experienced operator who was generous with security advice in my DMs. The rest I learned by getting it wrong. In broad strokes:</p>
+        <ul>
+          <li><strong>Private, behind peers I chose.</strong> The validator never advertises itself, accepts no inbound connections, and only dials out to eight fixed peers. One is a Ripple hub. The rest are hubs colocated with other validators, picked for low latency to the rest of consensus.</li>
+          <li><strong>Admin interfaces on loopback only.</strong> Anything with admin rights stays on the machine. Monitoring gets its own read-only interface, and the public dashboard only ever sees a read-only metrics endpoint.</li>
+          <li><strong>Least privilege.</strong> xrpld runs as its own unprivileged user under a hardened systemd unit.</li>
+          <li><strong>Memory limits at the systemd layer.</strong> A 36 GB soft cap and a 44 GB hard cap, added after the outage below.</li>
+          <li><strong>Stock binaries, upgraded by hand.</strong> OS security patches install automatically, but the xrpld package is deliberately excluded, so it never moves without me. Before each upgrade I save a dated copy of the config, then upgrade, restart, and watch until the node is back to proposing. The 3.3.0 upgrade in August was back in consensus in under a minute.</li>
+          <li><strong>Domain verification.</strong> The validator is tied to joshuahamsa.com through <a href="/.well-known/xrp-ledger.toml">xrp-ledger.toml</a>, so anyone can confirm who runs it.</li>
+        </ul>
+
+        <p>One opinionated choice: I vote for a 1-drop reference fee and zero account and owner reserves. My view is that reserves are a bigger barrier to adoption than spam is a threat.</p>
+
+        <p>For release timing, my feed has historically been Vet's timeline. When he starts posting about a new xrpld version, I start reading release notes. If I still haven't made time by the point he's warning people about getting amendment-blocked, that's my hard deadline.</p>
+
+        <h2>The worst night: 20 July 2026</h2>
+
+        <p>In mid-July the network was hit with a flood of junk validator manifests, which made xrpld's cache of untrusted manifests grow without bound. No fix had shipped yet, so I wrote a patch to filter them out. To test it, I ran the patched build in a Docker container, stopped my production validator so the two wouldn't fight over ports, and let the test build validate for what was meant to be a few days.</p>
+
+        <p>The container had no memory limit.</p>
+
+        <p>It leaked quietly for eight days: about 1.8 million log lines a day and no stall warnings. Then, in the final hours, swap ran out and ledger fetches went from milliseconds to 30 seconds. At 02:09 UTC the kernel's OOM killer fired and killed the biggest process, which was the container. But the memory thrashing had already stalled the network service in the middle of a DHCP renewal. The network card lost its lease and never got it back. The validator was dead, and so was everything else on the box.</p>
+
+        <p>I found out badly. Nothing paged me, because my monitoring lived on the same host. Hours later I noticed the dashboard and the validator history sites showing my key as missing, and the box wouldn't answer SSH. The fix for the network was walking up to the physical console the next morning. Total downtime was about 11.5 hours.</p>
+
+        <p>I rebooted, then spent four days on root cause. I initially blamed the production service and only found the real culprit by reading the container's exit code (137, OOM-killed) and the trajectory of its logs. The fixes:</p>
+        <ul>
+          <li>A static IP, so a DHCP renewal can never be a single point of failure again</li>
+          <li>Memory caps on the validator's systemd unit</li>
+          <li>An unrelated crash-looping service disabled</li>
+          <li>The patched build promoted to a proper systemd unit with the same protections</li>
+        </ul>
+
+        <p>When xrpld 3.2.1 shipped upstream with a stricter version of the same filter, I went straight back to the stock binary and kept my build only as a rollback.</p>
+
+        <h2>The quieter failures</h2>
+
+        <p>The July outage was loud. What came after was quiet, which is worse.</p>
+
+        <p>First, the <code>rippled</code> → <code>xrpld</code> package rename moved the systemd unit. For several days my shiny new memory cap was protecting a dead unit while the live validator ran uncapped. Nothing broke, so nothing told me.</p>
+
+        <p>Second, the validator still shares its host with a dozen Docker services from my other projects. While answering the XRPL Foundation's node operator survey this month, I found that the kernel had OOM-killed xrpld three times in three weeks. xrpld was well under its own cap each time, but a neighboring workload spiked and the kernel picked the validator. Every kill was invisible: systemd restarted xrpld within seconds, the node was back to full in under two minutes, and by the time I looked, everything was green again.</p>
+
+        <p>Since then I've told the kernel to kill the containers before the validator, and removed an unused stack that was eating about 5 GB of RAM. The real fix is moving the remaining app stacks to their own box, and better alerting, and both are in progress.</p>
+
+        <h2>What I learned</h2>
+        <ul>
+          <li><strong>Never run an experiment without a resource cap.</strong> A self-built binary is an update too, and it needs the same limits and monitoring as the real thing.</li>
+          <li><strong>Resource isolation is a security control, not just an ops one.</strong> Every extra service on the validator's host is attack surface, memory pressure, and one more thing that can wedge the machine.</li>
+          <li><strong>Verify enforcement; don't trust config.</strong> A cap on the wrong unit, a monitoring job pointed at a deleted path, a forgotten service listening on ports: all three happened to me. Config that exists but doesn't apply is worse than none, because you stop looking.</li>
+          <li><strong>Keeping less history isn't free.</strong> A tiny <code>online_delete</code> saves disk space and costs you the disk. Size it so rotations are rare.</li>
+          <li><strong>Security decays quietly.</strong> Things get set up right once, then a rename, a migration, or an experiment moves them out from under their protections. Answering a detailed survey turned out to be a surprisingly effective audit.</li>
+          <li><strong>The only irreplaceable file is the master validator key.</strong> It's what domain verification and any UNL listing are bound to. Everything else, including the config and the ledger data, can be regenerated. Plan where the second copy of that key lives before you need it.</li>
+        </ul>
+
+        <h2>How I know it's healthy</h2>
+
+        <p>Three things, day to day:</p>
+        <ul>
+          <li><strong>The login banner.</strong> A cron job renders a validator summary into the SSH message of the day every 30 seconds: state, ledger, peers, amendment votes, uptime, disk, and memory. I'm on the box daily for other work, so I see the validator's health before I type a command.</li>
+          <li><strong>The web dashboard.</strong> The <a href="/validator.html">live dashboard</a> reads from a Prometheus exporter I wrote. It's open source: <a href="https://github.com/joshuahamsa/LFG-XRPL-Validator-Dashboard" target="_blank" rel="noopener noreferrer">LFG-XRPL-Validator-Dashboard</a>.</li>
+          <li><strong>External sources of truth.</strong> XRPScan and the <a href="https://livenet.xrpl.org" target="_blank" rel="noopener noreferrer">validator history service</a>, to confirm my key agrees with the network rather than trusting my own node's view of itself.</li>
+        </ul>
+
+        <p>Healthy means <code>server_state</code> is <code>proposing</code>, the validated ledger is less than about 5 seconds old, all 8 fixed peers are connected, the node isn't amendment-blocked, and my key shows up in the external agreement stats.</p>
+
+        <figure>
+          <img src="../assets/blog/home-validator/validator-uptime.svg" width="728" height="228" alt="Uptime track record from the XRPL validator history service as of 2026-09-23: 100% agreement over the last hour (0 missed of 932), 100% over the last 24 hours (0 missed of 21,436), and 99.81% over the last 30 days (644,540 agreed of 645,748). Domain verified: joshuahamsa.com, reporting version 3.4.0.">
+          <figcaption>Validation agreement as of 2026-09-23. Most of the 30-day misses came from the SATA drive's trouble, swapping in the NVMe drive, and the 3.4.0 upgrade. The <a href="/validator.html">dashboard</a> has live numbers.</figcaption>
+        </figure>
+
+        <h2>What I wish existed</h2>
+
+        <p><strong>A first-run setup command.</strong> The hardest part of starting out was the config file. Mine is about 1,500 lines, and roughly 60 of them are live settings. It isn't obvious which options matter for a validator, which are safe to leave alone, or even that some sections are commented out and inert. Something like <code>xrpld init --validator</code> that asks a few questions and writes a short working config would have saved me the most time. A companion <code>xrpld config check</code>, one that prints the effective values and flags defaults that don't fit the hardware, would catch half the mistakes I've made. I ran for over a year without knowing what <code>node_size</code> was actually in effect.</p>
+
+        <p><strong>Operational docs.</strong> The official docs say you can safely enable validation on a server that's also used for other purposes. In my experience that's only true if the other workloads are resource-capped and the validator is protected from them. I'd like to see guidance on memory limits, OOM priority, what to monitor and alert on, and where the validator key should live. The docs also don't warn that a small <code>online_delete</code> multiplies disk writes, which cost me a drive.</p>
+
+        <p><strong>Real numbers on hosting diversity.</strong> The word on the grapevine is that most validators run on VPS providers, with a large share on a single one. If that's even roughly true, it's a risk for the network rather than for any one node: one provider's outage, policy change, or legal request could take a big slice of validators offline at once. Running on hardware I own brings its own problems, as this whole post shows, but it means my failures are uncorrelated with everyone else's. I'd like to see UNL publishers weight provider and jurisdiction diversity more visibly, and publish the actual numbers.</p>
+
+        <h2>If you're thinking about running one</h2>
+
+        <p>Buy refurbished and run it from home. A used single-socket Xeon with 64 GB of RAM and a consumer SSD is plenty, and it's well under a thousand dollars. Besides adding real decentralization to the network, the confidence you get from hosting your own infrastructure and watching it sync with the network is hard to beat. I've learned a huge amount about servers, networking, and the XRPL itself, most of it by getting something wrong and fixing it. The investment is small and the return is more than worth it.</p>
+      </div>
+    </main>
+
+    <footer>
+      <div class="post-navigation">
+        <span class="prompt">$</span> <span class="command">ls -la related/</span>
+        <div class="response">
+          <a href="/validator.html" class="terminal-link">validator.html</a><br>
+          <a href="learning-dev.html" class="terminal-link">learning-dev.md</a>
+        </div>
+      </div>
+      <div class="copyright">
+        <span class="prompt">$</span> <span class="command">echo $COPYRIGHT</span>
+        <div class="response">© <span id="current-year">2026</span> Joshua Hamsa</div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="../script.js"></script>
+</body>
+</html>
