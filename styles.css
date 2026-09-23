@@ -425,6 +425,78 @@ footer {
   margin-bottom: 1.5rem;
 }
 
+.post-content h2 {
+  font-size: 1.15rem;
+  margin: 2.5rem 0 1rem;
+  color: var(--text-color);
+}
+
+.post-content h2::before {
+  content: "## ";
+  color: var(--accent-color);
+}
+
+.post-content a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.post-content a:hover {
+  color: var(--link-hover);
+  text-decoration: underline;
+}
+
+.post-content strong {
+  color: var(--text-color);
+}
+
+.post-content :not(pre) > code {
+  background-color: #1a1a1a;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.post-content .table-scroll {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.post-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.post-content th,
+.post-content td {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px dashed #333;
+}
+
+.post-content th {
+  color: var(--secondary-color);
+  font-weight: normal;
+  border-bottom: 1px solid #333;
+}
+
+.post-content figure {
+  margin: 2rem 0;
+}
+
+.post-content figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.post-content figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--secondary-color);
+}
+
 .post-navigation {
   margin-bottom: 2rem;
 }

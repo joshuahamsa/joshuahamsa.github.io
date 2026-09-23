@@ -23,8 +23,8 @@ github = "joshuahamsa"
 website = "https://joshuahamsa.com"
 
 [[VALIDATOR_SPEC]]
-CPU = "Xeon(R) E5-2690 8-Core 16-Thread 2.9Ghz"
-MEMORY = "64GB DDR4 2666 Mhz"
-DISK = "1 x 500GB SSD SATA 6GB/s"
+CPU = "Xeon(R) E5-2690 v2 10-Core 20-Thread 3.0Ghz"
+MEMORY = "64GB DDR3 ECC Registered 1600 MHz (4 x 16GB)"
+DISK = "1 x 2TB Samsung 990 PRO NVMe (OS + ledger), 1 x 500GB SATA SSD (boot)"
 OS = "Linux"
-CONNECTIVITY = "800 Mbps"
+CONNECTIVITY = "700 Mbps down / 23 Mbps up"
